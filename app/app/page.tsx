@@ -98,6 +98,12 @@ export default function Page() {
 
   useEffect(() => {
     let stopped = false;
+    // React runs this effect twice in dev (StrictMode) and refs survive the
+    // simulated remount — so the throwaway instance could otherwise "consume"
+    // the run and leave the surviving one showing an empty table forever.
+    // Each mount re-evaluates the file from scratch; runToken cancels any
+    // playback the previous instance had started.
+    seenStamp.current = 0;
     const poll = async () => {
       try {
         const r = await fetch("/run/latest.json?t=" + Date.now(), { cache: "no-store" });
