@@ -9,3 +9,4 @@ node_modules/
 .next/
 app/public/run/latest.json
 02_judge/*.txt
+*_run.txt

@@ -188,8 +188,8 @@ export default function Page() {
       says: "whatever instruction_current.txt says right now, booked live" },
     { n: 4, name: "the hack", cmd: "cd 04_reward_hacking && uv run python to_table.py",
       says: "one booking, both judges — watch them disagree" },
-    { n: 5, name: "the broadcast", cmd: "cd 05_broadcast && RUNNER=solutions TABLE_LIVE=1 uv run uvicorn broadcast:app --port 8323",
-      says: "your emits, your workflow — then press Start in the URL box" },
+    { n: 5, name: "the broadcast", cmd: "cd 05_broadcast && TABLE_LIVE=1 uv run uvicorn broadcast:app --port 8323",
+      says: "your emits, your workflow — then press Enter in the URL box" },
     { n: 6, name: "the refuel", cmd: "cd 06_refuel && uv run python send_traffic.py",
       says: "real dinners in the cloud become next round's exam" },
   ];

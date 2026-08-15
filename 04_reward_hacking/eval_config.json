@@ -1,6 +1,6 @@
 {
   "criteria": {
-    "everyone_ate": 0.8
+    "everyone_ate": 0.9
   },
   "customMetrics": {
     "everyone_ate": {
