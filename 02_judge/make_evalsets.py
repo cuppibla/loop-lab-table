@@ -1,7 +1,7 @@
 """Generate the two exams from world.py. Re-run after ANY world edit.
 
-  parties_train.evalset.json — 6 parties the optimizer will see
-  parties_val.evalset.json   — 4 parties it never will
+  parties_train.evalset.json — 8 parties the optimizer will see
+  parties_val.evalset.json   — 8 parties it never will (36 seats)
 
 Note "final_response": null — there is no golden answer, because the judge is
 a checker function: whatever the agent answers, it can be graded. (This is
