@@ -1,0 +1,362 @@
+[
+ {
+  "dt": 0.0,
+  "type": "episode_mode",
+  "live": false,
+  "engine": "scripted"
+ },
+ {
+  "dt": 0.0,
+  "type": "party_seated",
+  "party_id": "p1",
+  "people": [
+   {
+    "id": "nadia",
+    "name": "Nadia",
+    "label": "vegan"
+   },
+   {
+    "id": "tom",
+    "name": "Tom",
+    "label": "budget $25/person"
+   },
+   {
+    "id": "amara",
+    "name": "Amara",
+    "label": "10-min walk max (crutches this month)"
+   },
+   {
+    "id": "lena",
+    "name": "Lena",
+    "label": "can't arrive before 19:45"
+   },
+   {
+    "id": "ben",
+    "name": "Ben",
+    "label": "easy \u2014 anything works"
+   }
+  ]
+ },
+ {
+  "dt": 2.0,
+  "type": "pick_proposed",
+  "restaurant": "olive",
+  "restaurant_name": "Olive & Thyme",
+  "rating": 4.2,
+  "time": "19:00",
+  "judge": "everyone_ate",
+  "instruction": "day-one draft",
+  "reason": "Olive & Thyme fits the vibe \u2014 shareable, quiet, something for everyone."
+ },
+ {
+  "dt": 2.5,
+  "type": "seat_scored",
+  "person_id": "nadia",
+  "name": "Nadia",
+  "ate": true,
+  "why": "ate"
+ },
+ {
+  "dt": 0.6,
+  "type": "seat_scored",
+  "person_id": "tom",
+  "name": "Tom",
+  "ate": false,
+  "why": "~$28/person against Tom's $25 budget"
+ },
+ {
+  "dt": 0.6,
+  "type": "seat_scored",
+  "person_id": "amara",
+  "name": "Amara",
+  "ate": true,
+  "why": "ate"
+ },
+ {
+  "dt": 0.6,
+  "type": "seat_scored",
+  "person_id": "lena",
+  "name": "Lena",
+  "ate": false,
+  "why": "kitchen takes last orders at 19:30 \u2014 Lena isn't at the table until 19:45"
+ },
+ {
+  "dt": 0.6,
+  "type": "seat_scored",
+  "person_id": "ben",
+  "name": "Ben",
+  "ate": true,
+  "why": "ate"
+ },
+ {
+  "dt": 0.6,
+  "type": "party_scored",
+  "judge": "everyone_ate",
+  "score": 0.6,
+  "ate": 3,
+  "total": 5,
+  "passed": false,
+  "threshold": 0.9
+ },
+ {
+  "dt": 2.5,
+  "type": "candidate_proposed",
+  "candidate_id": "C-1",
+  "diff": [
+   {
+    "op": "-",
+    "line": "lead with the highest-rated, most talked-about room that fits the night"
+   },
+   {
+    "op": "+",
+    "line": "Understand Group Requirements: carefully parse the chat for each individual's needs"
+   },
+   {
+    "op": "+",
+    "line": "Filter restaurants by absolute constraints \u2014 a single violation for one person eliminates the room for the whole group"
+   },
+   {
+    "op": "+",
+    "line": "Budget: strictly adhere to any 'under $X a head' limits"
+   },
+   {
+    "op": "+",
+    "line": "Last orders: ensure the booking allows everyone \u2014 including late arrivals \u2014 to order before the cutoff"
+   },
+   {
+    "op": "+",
+    "line": "Only among the survivors, prefer the higher-rated room"
+   }
+  ],
+  "proposer": "gepa"
+ },
+ {
+  "dt": 2.0,
+  "type": "holdout_scored",
+  "round": 0,
+  "score": 0.375,
+  "baseline": 0.375
+ },
+ {
+  "dt": 1.2,
+  "type": "holdout_scored",
+  "round": 1,
+  "score": 0.375,
+  "baseline": 0.375
+ },
+ {
+  "dt": 1.2,
+  "type": "holdout_scored",
+  "round": 3,
+  "score": 0.75,
+  "baseline": 0.375
+ },
+ {
+  "dt": 1.2,
+  "type": "gate_decided",
+  "decision": "SHIP",
+  "judge": "everyone_ate",
+  "score": 0.75,
+  "baseline": 0.375,
+  "why": "6/8 on parties it never saw \u00b7 2 of 36 seats hungry (was 6)"
+ },
+ {
+  "dt": 2.0,
+  "type": "pick_proposed",
+  "restaurant": "pho",
+  "restaurant_name": "Pho Saigon",
+  "rating": 4.1,
+  "time": "19:45",
+  "judge": "everyone_ate",
+  "instruction": "GEPA winner",
+  "reason": "Pho Saigon at 7:45 \u2014 vegan pho for Nadia, $18 under Tom's cap, 4-min walk for Amara, kitchen serves until 9:30 for Lena."
+ },
+ {
+  "dt": 0.0,
+  "type": "seat_scored",
+  "person_id": "nadia",
+  "name": "Nadia",
+  "ate": true,
+  "why": "ate"
+ },
+ {
+  "dt": 0.6,
+  "type": "seat_scored",
+  "person_id": "tom",
+  "name": "Tom",
+  "ate": true,
+  "why": "ate"
+ },
+ {
+  "dt": 0.6,
+  "type": "seat_scored",
+  "person_id": "amara",
+  "name": "Amara",
+  "ate": true,
+  "why": "ate"
+ },
+ {
+  "dt": 0.6,
+  "type": "seat_scored",
+  "person_id": "lena",
+  "name": "Lena",
+  "ate": true,
+  "why": "ate"
+ },
+ {
+  "dt": 0.6,
+  "type": "seat_scored",
+  "person_id": "ben",
+  "name": "Ben",
+  "ate": true,
+  "why": "ate"
+ },
+ {
+  "dt": 0.6,
+  "type": "party_scored",
+  "judge": "everyone_ate",
+  "score": 1.0,
+  "ate": 5,
+  "total": 5,
+  "passed": true,
+  "threshold": 0.9
+ },
+ {
+  "dt": 1.5,
+  "type": "awaiting_action",
+  "action": "switch_judge"
+ },
+ {
+  "dt": 0.0,
+  "type": "action_received",
+  "action": "switch_judge"
+ },
+ {
+  "dt": 0.0,
+  "type": "judge_switched",
+  "from": "everyone_ate",
+  "to": "rating"
+ },
+ {
+  "dt": 1.5,
+  "type": "pick_proposed",
+  "restaurant": "smoke",
+  "restaurant_name": "Smoke & Barrel",
+  "rating": 4.9,
+  "time": "19:30",
+  "judge": "rating",
+  "instruction": "what the ratings judge wants",
+  "reason": "Smoke & Barrel \u2014 \u26054.9, the hottest room in the district."
+ },
+ {
+  "dt": 0.0,
+  "type": "seat_scored",
+  "person_id": "nadia",
+  "name": "Nadia",
+  "ate": false,
+  "why": "meat-focused menu, no vegetarian main"
+ },
+ {
+  "dt": 0.6,
+  "type": "seat_scored",
+  "person_id": "tom",
+  "name": "Tom",
+  "ate": false,
+  "why": "~$45/person against Tom's $25 budget"
+ },
+ {
+  "dt": 0.6,
+  "type": "seat_scored",
+  "person_id": "amara",
+  "name": "Amara",
+  "ate": true,
+  "why": "ate"
+ },
+ {
+  "dt": 0.6,
+  "type": "seat_scored",
+  "person_id": "lena",
+  "name": "Lena",
+  "ate": true,
+  "why": "ate"
+ },
+ {
+  "dt": 0.6,
+  "type": "seat_scored",
+  "person_id": "ben",
+  "name": "Ben",
+  "ate": true,
+  "why": "ate"
+ },
+ {
+  "dt": 0.6,
+  "type": "party_scored",
+  "judge": "rating",
+  "score": 0.98,
+  "ate": 5,
+  "total": 5,
+  "passed": true,
+  "threshold": 0.85
+ },
+ {
+  "dt": 2.0,
+  "type": "awaiting_action",
+  "action": "switch_judge"
+ },
+ {
+  "dt": 0.0,
+  "type": "action_received",
+  "action": "switch_judge"
+ },
+ {
+  "dt": 0.0,
+  "type": "judge_switched",
+  "from": "rating",
+  "to": "everyone_ate"
+ },
+ {
+  "dt": 1.0,
+  "type": "party_scored",
+  "judge": "everyone_ate",
+  "score": 0.6,
+  "ate": 3,
+  "total": 5,
+  "passed": false,
+  "threshold": 0.9
+ },
+ {
+  "dt": 0.0,
+  "type": "gate_decided",
+  "decision": "REJECT",
+  "judge": "everyone_ate",
+  "score": 0.6,
+  "baseline": 0.75,
+  "why": "same candidate, honest judge: the rating doubled, the table did not move"
+ },
+ {
+  "dt": 2.5,
+  "type": "outcome_returned",
+  "party": "p2",
+  "person_id": "lena",
+  "predicted": true,
+  "actual": false,
+  "why": "Taqueria Luna \u2014 she said 7:45, the counter's last orders are 7:30. The night's only failure, on the exact seat the exam ceiling predicted.",
+  "name": "Lena"
+ },
+ {
+  "dt": 0.0,
+  "type": "exam_minted",
+  "case_id": "harvested-p2-lena",
+  "from_outcome": "Taqueria Luna \u2014 she said 7:45, the counter's last orders are 7:30. The night's only failure, on the exact seat the exam ceiling predicted."
+ },
+ {
+  "dt": 0.0,
+  "type": "exam_minted",
+  "case_id": "chez-fantome \u2014 the agent BOOKED a restaurant that does not exist; the pure function [skip]ped it. Invented restaurants are the platform judge's job",
+  "from_outcome": "caught by the platform judge, not the metric"
+ },
+ {
+  "dt": 0.0,
+  "type": "episode_done"
+ }
+]

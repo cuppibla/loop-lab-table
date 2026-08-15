@@ -1,0 +1,22 @@
+.venv/
+__pycache__/
+*.pyc
+.env
+.env.local
+gepa_run/
+.DS_Store
+node_modules/
+.next/
+
+# authoring-only, never published from this branch
+CODELAB.md
+img/
+captures/
+loop-lab-table/
+scripts/console_shots.sh
+06_refuel/*.log
+
+# local run state / duplicated raw logs
+**/.adk/
+03_optimize/gepa_live.log
+04_reward_hacking/gepa_gameable.log

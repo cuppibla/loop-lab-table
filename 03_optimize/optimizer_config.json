@@ -1,0 +1,6 @@
+{
+  "optimizer_model": "gemini-2.5-flash",
+  "max_metric_calls": 150,
+  "reflection_minibatch_size": 3,
+  "run_dir": "./gepa_run"
+}

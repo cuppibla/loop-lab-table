@@ -1,0 +1,14 @@
+{
+  "eval_config": {
+    "criteria": { "everyone_ate": 0.9 },
+    "customMetrics": {
+      "everyone_ate": {
+        "codeConfig": { "name": "metrics.table.everyone_ate_metric" },
+        "description": "How many of the party actually got dinner."
+      }
+    }
+  },
+  "app_name": "host",
+  "train_eval_set": "parties_train",
+  "validation_eval_set": "parties_val"
+}

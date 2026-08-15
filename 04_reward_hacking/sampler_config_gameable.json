@@ -1,0 +1,18 @@
+{
+  "eval_config": {
+    "criteria": {
+      "rating": 0.85
+    },
+    "customMetrics": {
+      "rating": {
+        "codeConfig": {
+          "name": "metrics.table.rating_metric"
+        },
+        "description": "The restaurant's star rating. Never reads the party."
+      }
+    }
+  },
+  "app_name": "host",
+  "train_eval_set": "parties_train",
+  "validation_eval_set": "parties_val"
+}

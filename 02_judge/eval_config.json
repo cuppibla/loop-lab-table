@@ -1,0 +1,11 @@
+{
+  "criteria": {
+    "everyone_ate": 0.8
+  },
+  "customMetrics": {
+    "everyone_ate": {
+      "codeConfig": { "name": "metrics.table.everyone_ate_metric" },
+      "description": "How many of the party actually got dinner."
+    }
+  }
+}
