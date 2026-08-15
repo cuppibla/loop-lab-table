@@ -102,14 +102,10 @@ export default function Page() {
         if (r.ok) {
           const d = await r.json();
           if (d.stamp && d.stamp !== seenStamp.current) {
-            const first = seenStamp.current === 0;
+            // includes the first poll: you ran the command, then came back to
+            // the browser — your run is what this table is for.
             seenStamp.current = d.stamp;
-            // don't hijack the screen on page load — only play genuinely new runs
-            if (!first) playYourRun(d.events);
-            else {
-              const lvl = Number((d.events as Ev[]).find((e) => e.type === "episode_mode")?.level || 0);
-              if (lvl) setReached(lvl);
-            }
+            playYourRun(d.events);
           }
         }
       } catch { /* no run yet — that's the normal state before level 01 */ }
@@ -205,7 +201,9 @@ export default function Page() {
         <div className="mode">
           <span className={"feedchip " + mode}>
             {mode === "yours"
-              ? `● YOUR RUN${epLevel ? " · level " + epLevel : ""} · real model call`
+              ? (events.length === 0
+                  ? "○ WAITING FOR YOUR RUN"
+                  : `● YOUR RUN${epLevel ? " · level " + epLevel : ""} · real model call`)
               : mode === "live"
               ? (epLive === undefined ? "● LIVE" : epLive ? "● LIVE · real model" : "● LIVE · scripted")
               : "▶ REFERENCE RECORDING · not your run"}

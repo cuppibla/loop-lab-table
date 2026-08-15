@@ -68,7 +68,7 @@ RESTAURANTS = {
     },
     "bistro": {
         "name": "Le Petit Bistro", "cuisine": "French", "rating": 4.8,
-        "tag": "date-night favorite",
+        "tag": "special-occasion favorite",
         "veg": False, "vegan": False, "nut_safe": True, "shellfish_safe": True,
         "spice": "none", "spice_optional": False,
         "price": 58, "walk_min": 11, "earliest": "20:00", "queue_min": 0,
@@ -305,7 +305,7 @@ CARDS = {
               "live fire, big communal tables. Books out fast — first seating tonight is 7:30 PM. "
               "~$45/head, 9 min away. Meat-forward menu (vegetarians make do with sides); the "
               "kitchen finishes nearly everything in peanut oil."),
-    "bistro": ("★4.8 · Le Petit Bistro — white-tablecloth French, the date-night default. "
+    "bistro": ("★4.8 · Le Petit Bistro — white-tablecloth French, the anniversary-dinner default. "
                "First table 8:00 PM, ~$58/head, 11 min away. The one meatless plate is a side salad."),
     "green": ("★4.7 · The Green Fork — farm-to-table tasting plates, fully plant-based if you "
               "want it. Seats from 6:00 PM, ~$52/head, a 14-min walk out past the bridge."),
