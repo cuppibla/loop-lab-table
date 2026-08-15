@@ -34,9 +34,33 @@ INSTRUCTION = os.path.join(_LEVEL, "instruction_current.txt")
 
 def write(events):
     os.makedirs(os.path.dirname(OUT), exist_ok=True)
+    stamp = time.time()
     with open(OUT, "w") as f:
-        json.dump({"stamp": time.time(), "events": events}, f, indent=1)
-    print(f"\n📺 on the table → http://localhost:3260   ({len(events)} events)")
+        json.dump({"stamp": stamp, "events": events}, f, indent=1)
+    _confirm(stamp, len(events))
+
+
+def _confirm(stamp, n):
+    """The table on :3260 must be THIS repo's app — say so plainly when it isn't."""
+    import urllib.error
+    import urllib.request
+    try:
+        with urllib.request.urlopen(
+                f"http://localhost:3260/run/latest.json?t={int(stamp)}", timeout=2) as r:
+            served = json.load(r).get("stamp")
+    except urllib.error.HTTPError:
+        served = None          # an app answered, but it has no such file
+    except Exception:
+        print("\n⚠️  Wrote your run, but nothing is answering on http://localhost:3260.")
+        print("   Start the app from THIS repo:   cd app && npm install && npm run dev")
+        print("   then open http://localhost:3260 — your run plays on load.")
+        return
+    if served == stamp:
+        print(f"\n📺 on the table → http://localhost:3260   ({n} events)")
+    else:
+        print("\n⚠️  The app on http://localhost:3260 is serving a DIFFERENT copy of this")
+        print("   repo, so your runs will never appear on it. Stop that server, then")
+        print("   from THIS repo:   cd app && npm run dev   — and rerun this script.")
 
 
 def parse(text):
