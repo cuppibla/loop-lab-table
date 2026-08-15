@@ -22,9 +22,11 @@ export default function Page() {
   const [mode, setMode] = useState<"replay" | "live" | "yours">("yours");
   const [liveUrl, setLiveUrl] = useState("http://127.0.0.1:8323");
   const [view, setView] = useState<"show" | "console">("show");
-  /* the level the student has actually reached — advanced by their own runs,
-     never by watching. `?act=N` overrides it (recording / demo mode). */
+  /* which level's step this table is showing. Advanced by the student's own
+     runs, never by watching. `?act=N` overrides it (recording / demo mode). */
   const [reached, setReached] = useState(1);
+  const [selected, setSelected] = useState(1);
+  const [stale, setStale] = useState<{ level: number; mins: number } | null>(null);
   const [note, setNote] = useState<string | null>(null);
   const seenStamp = useRef<number>(0);
   const [toast, setToast] = useState<string | null>(null);
@@ -82,10 +84,10 @@ export default function Page() {
   const playYourRun = useCallback(async (feed: Ev[]) => {
     const token = ++runToken.current;
     esRef.current?.close();
-    setMode("yours"); setEvents([]); setAwaiting(null); setStarted(true);
+    setMode("yours"); setEvents([]); setAwaiting(null); setStarted(true); setStale(null);
     setNote(feed.find((e) => e.type === "episode_mode")?.note ?? null);
     const lvl = Number(feed.find((e) => e.type === "episode_mode")?.level || 0);
-    if (lvl) setReached(lvl);   // the table reflects the last thing YOU ran
+    if (lvl) { setReached(lvl); setSelected(lvl); }   // the table follows YOUR run
     for (const ev of feed) {
       if (runToken.current !== token) return;
       await new Promise((r) => setTimeout(r, (ev.dt || 0) * 1000));
@@ -102,10 +104,18 @@ export default function Page() {
         if (r.ok) {
           const d = await r.json();
           if (d.stamp && d.stamp !== seenStamp.current) {
-            // includes the first poll: you ran the command, then came back to
-            // the browser — your run is what this table is for.
             seenStamp.current = d.stamp;
-            playYourRun(d.events);
+            const ageMin = (Date.now() / 1000 - d.stamp) / 60;
+            const lvl = Number((d.events as Ev[]).find((e) => e.type === "episode_mode")?.level || 0);
+            if (ageMin < 10) {
+              // you ran the command and came back to the browser — play it
+              playYourRun(d.events);
+            } else {
+              // an old run from a previous session must never auto-play: the
+              // table would look like a demo playing by itself.
+              if (lvl) setSelected(lvl);
+              setStale({ level: lvl, mins: Math.round(ageMin) });
+            }
           }
         }
       } catch { /* no run yet — that's the normal state before level 01 */ }
@@ -161,14 +171,23 @@ export default function Page() {
   const epLive: boolean | undefined = last(events, "episode_mode")?.live;
   const epLevel: string | undefined = last(events, "episode_mode")?.level;
 
-  /* the command that lights this table, per level — the table is driven from
-     the student's terminal, not from a button in here */
-  const CMD: Record<number, string> = {
-    1: "cd 01_host && uv run python to_table.py",
-    2: "cd 02_judge && uv run python to_table.py",
-    3: "cd 03_optimize && uv run python to_table.py",
-    4: "cd 04_reward_hacking && uv run python to_table.py",
-  };
+  /* the six codelab levels, and the command that lights this table for each —
+     the table is driven from the student's terminal, not from a button here */
+  const LEVELS = [
+    { n: 1, name: "the pick", cmd: "cd 01_host && uv run python to_table.py",
+      says: "your agent books a table — and nothing can judge it yet" },
+    { n: 2, name: "the judge", cmd: "cd 02_judge && uv run python to_table.py",
+      says: "seats from everyone_ate, the PASSED/FAILED stamp from your metric" },
+    { n: 3, name: "the rewrite", cmd: "cd 03_optimize && uv run python to_table.py",
+      says: "whatever instruction_current.txt says right now, booked live" },
+    { n: 4, name: "the hack", cmd: "cd 04_reward_hacking && uv run python to_table.py",
+      says: "one booking, both judges — watch them disagree" },
+    { n: 5, name: "the broadcast", cmd: "cd 05_broadcast && RUNNER=solutions TABLE_LIVE=1 uv run uvicorn broadcast:app --port 8323",
+      says: "your emits, your workflow — then press Start in the URL box" },
+    { n: 6, name: "the refuel", cmd: "cd 06_refuel && uv run python send_traffic.py",
+      says: "real dinners in the cloud become next round's exam" },
+  ];
+  const cur = LEVELS.find((l) => l.n === selected) ?? LEVELS[0];
 
   // seat states reset at each pick
   const lastPickIdx = lastIndex(events, "pick_proposed");
@@ -223,6 +242,20 @@ export default function Page() {
           Reference ▸ L{String(Math.min(reached, 4)).padStart(2, "0")}
         </button>
       </header>
+
+      {/* the codelab, as a rail — this table only ever shows one of these steps */}
+      <div className="rail">
+        <span className="rail-lab">CODELAB</span>
+        {LEVELS.map((l) => (
+          <button key={l.n}
+            className={"rail-lvl" + (l.n === selected ? " on" : "") + (l.n === reached ? " ran" : "")}
+            onClick={() => setSelected(l.n)}
+            title={l.says}>
+            {String(l.n).padStart(2, "0")} <em>{l.name}</em>
+          </button>
+        ))}
+        <span className="rail-hint">{cur.says}</span>
+      </div>
 
       {toast && <div className="toast">{toast}</div>}
       {mode === "yours" && note && <div className="yournote"><b>YOUR RUN</b> · {note}</div>}
@@ -279,10 +312,17 @@ export default function Page() {
                   <div className="idle">
                     {started ? <div className="quiet">seating the party…</div> : (
                       <>
-                        <div className="idle-lvl">LEVEL {String(reached).padStart(2, "0")}</div>
+                        <div className="idle-lvl">LEVEL {String(cur.n).padStart(2, "0")} · {cur.name.toUpperCase()}</div>
                         <div className="idle-say">This table waits for your agent.<br />Run this, and it lights up on its own:</div>
-                        <code className="idle-cmd">{CMD[Math.min(reached, 4)] ?? "cd 05_broadcast && RUNNER=solutions TABLE_LIVE=1 uv run uvicorn broadcast:app --port 8323"}</code>
-                        <div className="idle-foot">nothing here is pre-recorded unless the chip says so</div>
+                        <code className="idle-cmd">{cur.cmd}</code>
+                        {stale ? (
+                          <div className="idle-foot">
+                            your last run was level {String(stale.level).padStart(2, "0")}, {stale.mins} min ago —
+                            run it again to put it back on the table
+                          </div>
+                        ) : (
+                          <div className="idle-foot">nothing plays here that you did not run</div>
+                        )}
                       </>
                     )}
                   </div>

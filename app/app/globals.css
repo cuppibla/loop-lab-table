@@ -248,3 +248,19 @@ body {
   font: 11.5px/1.5 var(--mono); color: var(--ink); word-break: break-all;
 }
 .idle-foot { margin-top: 10px; font: 10.5px var(--mono); color: var(--ink-dim); opacity: .7; }
+
+/* ── the codelab rail: the app always says which lab step it is showing ── */
+.rail {
+  display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+  padding: 8px 18px; border-bottom: 1px solid var(--line); background: #1b1611;
+}
+.rail-lab { font: 700 10px/1 var(--mono); letter-spacing: 2px; color: var(--ink-dim); margin-right: 4px; }
+.rail-lvl {
+  font: 11px/1 var(--mono); color: var(--ink-dim); cursor: pointer;
+  padding: 6px 9px; border-radius: 7px; border: 1px solid transparent; background: none;
+}
+.rail-lvl em { font-style: normal; opacity: .75; }
+.rail-lvl:hover { border-color: var(--line); color: var(--ink); }
+.rail-lvl.on { color: var(--gold); border-color: var(--gold); }
+.rail-lvl.ran::after { content: " ●"; color: var(--good); font-size: 8px; vertical-align: middle; }
+.rail-hint { margin-left: auto; font: 10.5px var(--mono); color: var(--ink-dim); opacity: .8; }
