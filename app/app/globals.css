@@ -226,3 +226,25 @@ body {
   background: var(--card); border: 1px solid var(--gold); color: var(--gold);
   font: 12px var(--mono); border-radius: 8px; padding: 8px 16px; z-index: 9;
 }
+
+/* ── your-run identity: the table is driven from the student's terminal ── */
+.feedchip.yours { color: var(--good); border-color: var(--good); background: #7fc98a14; }
+
+.yournote {
+  margin: 0 18px 6px; padding: 7px 12px; border-radius: 8px;
+  border: 1px solid var(--good); background: #7fc98a10;
+  font: 11.5px/1.4 var(--mono); color: var(--good);
+}
+.yournote.ref { border-color: var(--line); background: var(--card); color: var(--ink-dim); }
+.yournote b { letter-spacing: 1px; }
+.yournote code { color: var(--ink); }
+
+.idle { padding: 16px 18px; text-align: center; }
+.idle-lvl { font: 700 11px/1 var(--mono); letter-spacing: 3px; color: var(--gold); }
+.idle-say { margin: 10px 0 12px; font: 13px/1.6 var(--mono); color: var(--ink-dim); }
+.idle-cmd {
+  display: block; padding: 9px 12px; border-radius: 8px;
+  background: #0e0b09; border: 1px solid var(--line);
+  font: 11.5px/1.5 var(--mono); color: var(--ink); word-break: break-all;
+}
+.idle-foot { margin-top: 10px; font: 10.5px var(--mono); color: var(--ink-dim); opacity: .7; }

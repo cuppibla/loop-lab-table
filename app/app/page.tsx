@@ -19,9 +19,14 @@ const RATING_SRC = `def rating_score(party, pick):   # the gameable judge
 export default function Page() {
   const [events, setEvents] = useState<Ev[]>([]);
   const [awaiting, setAwaiting] = useState<string | null>(null);
-  const [mode, setMode] = useState<"replay" | "live">("replay");
+  const [mode, setMode] = useState<"replay" | "live" | "yours">("yours");
   const [liveUrl, setLiveUrl] = useState("http://127.0.0.1:8323");
   const [view, setView] = useState<"show" | "console">("show");
+  /* the level the student has actually reached — advanced by their own runs,
+     never by watching. `?act=N` overrides it (recording / demo mode). */
+  const [reached, setReached] = useState(1);
+  const [note, setNote] = useState<string | null>(null);
+  const seenStamp = useRef<number>(0);
   const [toast, setToast] = useState<string | null>(null);
   const [started, setStarted] = useState(false);
   const resumeRef = useRef<(() => void) | null>(null);
@@ -35,10 +40,11 @@ export default function Page() {
      level ends with its own moment on the table:
        act=1 the pick (level 01) · act=2 the judge (level 02)
        act=3 the rewrite + ship (level 03) · act=4 the switch (level 04) ── */
-  const startReplay = useCallback(async () => {
+  const startReplay = useCallback(async (actArg?: number) => {
     const token = ++runToken.current;
-    setEvents([]); setAwaiting(null); setStarted(true);
-    const act = Number(new URLSearchParams(window.location.search).get("act") || 0);
+    setEvents([]); setAwaiting(null); setStarted(true); setNote(null);
+    const urlAct = Number(new URLSearchParams(window.location.search).get("act") || 0);
+    const act = actArg ?? urlAct;
     let feed: Ev[];
     try {
       feed = await (await fetch("/replay/episode.json")).json();
@@ -69,6 +75,49 @@ export default function Page() {
       }
     }
   }, [push]);
+
+  /* ── YOUR RUN: the file each level's `to_table.py` drops. This is the
+     default feed — the table shows what the student's own agent just did,
+     and it only ever appears because they ran a command. ── */
+  const playYourRun = useCallback(async (feed: Ev[]) => {
+    const token = ++runToken.current;
+    esRef.current?.close();
+    setMode("yours"); setEvents([]); setAwaiting(null); setStarted(true);
+    setNote(feed.find((e) => e.type === "episode_mode")?.note ?? null);
+    const lvl = Number(feed.find((e) => e.type === "episode_mode")?.level || 0);
+    if (lvl) setReached(lvl);   // the table reflects the last thing YOU ran
+    for (const ev of feed) {
+      if (runToken.current !== token) return;
+      await new Promise((r) => setTimeout(r, (ev.dt || 0) * 1000));
+      if (runToken.current !== token) return;
+      push(ev);
+    }
+  }, [push]);
+
+  useEffect(() => {
+    let stopped = false;
+    const poll = async () => {
+      try {
+        const r = await fetch("/run/latest.json?t=" + Date.now(), { cache: "no-store" });
+        if (r.ok) {
+          const d = await r.json();
+          if (d.stamp && d.stamp !== seenStamp.current) {
+            const first = seenStamp.current === 0;
+            seenStamp.current = d.stamp;
+            // don't hijack the screen on page load — only play genuinely new runs
+            if (!first) playYourRun(d.events);
+            else {
+              const lvl = Number((d.events as Ev[]).find((e) => e.type === "episode_mode")?.level || 0);
+              if (lvl) setReached(lvl);
+            }
+          }
+        }
+      } catch { /* no run yet — that's the normal state before level 01 */ }
+      if (!stopped) setTimeout(poll, 1200);
+    };
+    poll();
+    return () => { stopped = true; };
+  }, [playYourRun]);
 
   /* ── live engine: EventSource straight to the student's server ── */
   const startLive = useCallback(async (url: string) => {
@@ -114,6 +163,16 @@ export default function Page() {
   const minted = events.filter((e) => e.type === "exam_minted");
   const done = !!last(events, "episode_done");
   const epLive: boolean | undefined = last(events, "episode_mode")?.live;
+  const epLevel: string | undefined = last(events, "episode_mode")?.level;
+
+  /* the command that lights this table, per level — the table is driven from
+     the student's terminal, not from a button in here */
+  const CMD: Record<number, string> = {
+    1: "cd 01_host && uv run python to_table.py",
+    2: "cd 02_judge && uv run python to_table.py",
+    3: "cd 03_optimize && uv run python to_table.py",
+    4: "cd 04_reward_hacking && uv run python to_table.py",
+  };
 
   // seat states reset at each pick
   const lastPickIdx = lastIndex(events, "pick_proposed");
@@ -145,29 +204,36 @@ export default function Page() {
         <div className="spacer" />
         <div className="mode">
           <span className={"feedchip " + mode}>
-            {mode === "live"
+            {mode === "yours"
+              ? `● YOUR RUN${epLevel ? " · level " + epLevel : ""} · real model call`
+              : mode === "live"
               ? (epLive === undefined ? "● LIVE" : epLive ? "● LIVE · real model" : "● LIVE · scripted")
-              : "▶ REPLAY · recorded"}
+              : "▶ REFERENCE RECORDING · not your run"}
           </span>
           <input
             value={liveUrl}
             onChange={(e) => setLiveUrl(e.target.value)}
             onKeyDown={(e) => { if (e.key === "Enter") { setMode("live"); startLive(liveUrl); } }}
-            title="your agent's broadcast server — press Enter to attach"
+            title="your agent's broadcast server (level 05) — press Enter to attach"
           />
         </div>
         <button className="btn" onClick={() => setView(view === "show" ? "console" : "show")}>
           {view === "show" ? "Console" : "Show"}
         </button>
-        <button className="btn primary" onClick={() => {
-          if (new URLSearchParams(window.location.search).get("act")) { setMode("replay"); startReplay(); }
-          else { setMode("live"); startLive(liveUrl); }
-        }}>
-          {started ? "Restart" : "Start the dinner"}
+        <button className="btn" title="the finished lab, recorded — stops at the level you have reached"
+          onClick={() => { setMode("replay"); startReplay(Math.min(reached, 4)); }}>
+          Reference ▸ L{String(Math.min(reached, 4)).padStart(2, "0")}
         </button>
       </header>
 
       {toast && <div className="toast">{toast}</div>}
+      {mode === "yours" && note && <div className="yournote"><b>YOUR RUN</b> · {note}</div>}
+      {mode === "replay" && started && (
+        <div className="yournote ref">
+          <b>REFERENCE RECORDING</b> · this is the finished lab, not your agent —
+          your own run appears when you run <code>to_table.py</code>
+        </div>
+      )}
 
       {view === "console" ? (
         <Console events={events} judge={judge} />
@@ -212,8 +278,15 @@ export default function Page() {
               })}
               <div className="table-top">
                 {people.length === 0 ? (
-                  <div className="quiet" style={{ padding: 20, textAlign: "center" }}>
-                    {started ? "seating the party…" : "press Start"}
+                  <div className="idle">
+                    {started ? <div className="quiet">seating the party…</div> : (
+                      <>
+                        <div className="idle-lvl">LEVEL {String(reached).padStart(2, "0")}</div>
+                        <div className="idle-say">This table waits for your agent.<br />Run this, and it lights up on its own:</div>
+                        <code className="idle-cmd">{CMD[Math.min(reached, 4)] ?? "cd 05_broadcast && RUNNER=solutions TABLE_LIVE=1 uv run uvicorn broadcast:app --port 8323"}</code>
+                        <div className="idle-foot">nothing here is pre-recorded unless the chip says so</div>
+                      </>
+                    )}
                   </div>
                 ) : (
                   <div className="table-info">

@@ -20,3 +20,4 @@ scripts/console_shots.sh
 **/.adk/
 03_optimize/gepa_live.log
 04_reward_hacking/gepa_gameable.log
+app/tsconfig.tsbuildinfo
