@@ -52,6 +52,21 @@ async def wait_for(action_type: str) -> dict:
             return a
 
 
+@app.get("/")
+async def index():
+    # People WILL open this address in a browser — leave a signpost, not a 404.
+    return {
+        "this": "the Table for N event bus — an API, not a page",
+        "open_instead": "http://localhost:3260 — the app; press Enter in its URL box to connect it here",
+        "doors": {
+            "GET /events": "SSE: full history, then live",
+            "POST /run": "start one episode",
+            "POST /actions": "answer a paused loop",
+            "GET /log": "the whole log as JSON",
+        },
+    }
+
+
 @app.get("/events")
 async def events():
     q: asyncio.Queue = asyncio.Queue()
