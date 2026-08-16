@@ -17,12 +17,16 @@ _LEVEL = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 with open(os.path.join(_LEVEL, "instruction_current.txt")) as f:
     CURRENT_INSTRUCTION = f.read()
 
+# The whole lab runs the host at thinking_budget=0 — that ceiling is the
+# story. The finale unlocks it: HOST_THINKING=1024 is the other lever.
+_THINKING = int(os.environ.get("HOST_THINKING", "0"))
+
 root_agent = Agent(
     name="host",
     model="gemini-2.5-flash",
     instruction=CURRENT_INSTRUCTION,
     generate_content_config=types.GenerateContentConfig(
-        thinking_config=types.ThinkingConfig(thinking_budget=0),
+        thinking_config=types.ThinkingConfig(thinking_budget=_THINKING),
         temperature=0.0,
     ),
 )
