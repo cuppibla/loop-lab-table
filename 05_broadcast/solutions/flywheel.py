@@ -1,4 +1,4 @@
-"""The flywheel as a graph — a BOUNDED self-evolving loop, in ADK 2.
+"""SOLUTIONS — the flywheel with YOUR EDGE written in. Try flywheel.py first.
 
     host (agent — its instruction is TEMPLATED FROM STATE)
       -> judge (the level-02 pure function; whys go into state)
@@ -168,12 +168,7 @@ async def run(emit, wait_for):
         edges=[
             ("START", seed, host, judge, router),
             (router, {"improve": proposer, "ship": done}),
-            # ── YOUR EDGE ──────────────────────────────────────────────
-            # As shipped, every edge points forward — so this "loop" runs
-            # exactly one round and stalls. The loop is ONE line: route the
-            # proposer's rewrite through publish and back into host, so
-            # round n+1 runs under the new instruction.
-            # TODO: (proposer, publish, host),
+            (proposer, publish, host),   # <- the route back: the loop itself
         ],
     )
 

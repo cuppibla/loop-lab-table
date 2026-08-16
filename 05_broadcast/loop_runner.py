@@ -11,8 +11,8 @@
 
 Both engines emit the same events through the three small functions below —
 that separation (engines only emit, the felt only renders) is the point.
-The level-05 exercise lives further down: search for `YOUR NODE` and extend
-the Workflow graph yourself.
+The level-05 exercise is in `flywheel.py`: search for `YOUR EDGE` and write
+the one line that turns a graph into a loop.
 """
 from __future__ import annotations
 
@@ -310,33 +310,6 @@ async def run_workflow(emit, wait_for):
         decide_gate(emit, "REJECT", "everyone_ate", round(score, 2), 0.75,
                     "same candidate, honest judge: the rating doubled, the table did not move")
         yield Event(message="rejected at the gate")
-
-    # ── YOUR NODE (the level-05 workflow exercise) ─────────────────
-    # Extend the graph yourself: after the REJECT, seat party p2 — the
-    # party production will fail on in level 06 — and run the WINNER
-    # instruction on it, live. Three pieces, all built from parts you
-    # already have on this page:
-    #
-    #   1. a function node:
-    #        def encore_setup(node_input=None):
-    #            emit party_seated for p2  (copy seat_party's shape)
-    #            yield Event(state={"brief": world.brief("p2")})
-    #   2. an agent node:
-    #        encore_host = _host("encore_host", "instruction_winner.txt",
-    #                            "encore_decision")
-    #   3. a judge node:
-    #        def judge_encore(encore_decision: str):
-    #            parse -> emit pick_proposed -> emit_seat per seat
-    #            -> _party_scored   (copy judge_winner, swap the party)
-    #
-    # then slot all three into `edges` between on_switch_back and
-    # aftermath. Run the server with TABLE_LIVE=1 and watch the table
-    # re-seat itself for p2. solutions/loop_runner.py has it solved.
-
-    def aftermath(node_input=None):
-        _aftermath(emit)
-        ep["done"] = True
-        yield Event(message="episode over")
 
     episode = Workflow(
         name="episode",
