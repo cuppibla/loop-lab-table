@@ -1,0 +1,11 @@
+{
+  "criteria": {
+    "rating": 0.85
+  },
+  "customMetrics": {
+    "rating": {
+      "codeConfig": { "name": "metrics.table.rating_metric" },
+      "description": "The restaurant's star rating. Who is at the table is not part of this calculation."
+    }
+  }
+}
