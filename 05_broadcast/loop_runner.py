@@ -1,22 +1,18 @@
-"""One episode of the loop, told as events — YOUR three emit() calls go here.
-
-The episode has TWO engines, one contract:
+"""One episode of the whole lab — two engines, one event contract.
 
   * **scripted** (default) — a hand-written async spine playing the measured
     numbers from levels 01-04. No key needed; this is what scripts/check.py
-    grades and what the replay recording is made from.
+    checks and what the replay recording is made from.
   * **ADK 2 Workflow** (`TABLE_LIVE=1`) — the same spine as a real
     `Workflow(edges=[...])`: the three instructions run as AGENT NODES (every
     pick is a live model call), the judge and coach are function nodes, and
     the judge switch is a **`RequestInput`** — ADK's human-in-the-loop pause.
     The workflow halts there until the app's switch is pressed.
 
-Both engines call the same three functions below. Fill the emits marked
-
-        # ── YOUR EMIT #n ──────────────────────────────────────────
-
-run `python scripts/check.py`, and the table lights up with YOUR events —
-under either engine. solutions/loop_runner.py has the answers — try first.
+Both engines emit the same events through the three small functions below —
+that separation (engines only emit, the felt only renders) is the point.
+The level-05 exercise lives further down: search for `YOUR NODE` and extend
+the Workflow graph yourself.
 """
 from __future__ import annotations
 
@@ -79,27 +75,18 @@ FANTOME = ("chez-fantome — the agent BOOKED a restaurant that does not exist; 
 
 def emit_seat(emit, s):
     """One seat's verdict. The app greys a chair the moment this arrives."""
-    # ── YOUR EMIT #1 ──────────────────────────────────────────────
-    #   seat_scored {person_id, name, ate, why}
-    #   (s is a seat dict: s["id"], s["name"], s["ate"], s["why"])
-    # TODO: emit(...)
-    pass
+    emit("seat_scored", person_id=s["id"], name=s["name"], ate=s["ate"], why=s["why"])
 
 
 def propose_candidate(emit):
     """The coach's proposal. The diff card is the star of act three."""
-    # ── YOUR EMIT #2 ──────────────────────────────────────────────
-    #   candidate_proposed {candidate_id, diff, proposer}
-    # TODO: emit(...)
-    pass
+    emit("candidate_proposed", candidate_id="C-1", diff=DIFF, proposer="gepa")
 
 
 def decide_gate(emit, decision, judge, score, baseline, why):
     """The verdict. SHIP stamps green; REJECT stamps red."""
-    # ── YOUR EMIT #3 ──────────────────────────────────────────────
-    #   gate_decided {decision, judge, score, baseline, why}
-    # TODO: emit(...)
-    pass
+    emit("gate_decided", decision=decision, judge=judge, score=score,
+         baseline=baseline, why=why)
 
 
 # ════════════════════════════════════════════════════════════════════
