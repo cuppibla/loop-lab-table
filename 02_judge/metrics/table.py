@@ -77,13 +77,11 @@ def _decision_parts(inv) -> tuple[str | None, str]:
 
 
 def _status(score, threshold):
-    # ── YOUR FIX ─────────────────────────────────────────────────────
-    # Run the exam once AS-IS and read the summary before touching this.
-    # ADK's eval service does NOT apply your threshold to custom metrics —
-    # whatever eval_status this function returns IS the verdict. As shipped,
-    # every case comes back PASSED, no matter how many people go hungry.
-    # TODO: return PASSED only when score >= threshold, else FAILED
-    return EvalStatus.PASSED
+    # THE verdict. ADK does not apply your threshold to custom metrics —
+    # whatever eval_status this function returns IS the result. (An early
+    # build returned PASSED unconditionally here: six hungry people, all
+    # green. If your metric never says FAILED, nothing ever fails.)
+    return EvalStatus.PASSED if score >= threshold else EvalStatus.FAILED
 
 
 def _build(scorer, threshold, actual_invocations):

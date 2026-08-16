@@ -4,10 +4,7 @@ Same live model call as level 01 — but now the table gets judged, and the
 verdict stamp comes from YOUR code:
 
     seats      <- world.everyone_ate  (walks the table, seat by seat)
-    the stamp  <- metrics/table.py::_status  (the two lines you fix in this level)
-
-Run it BEFORE your fix and the table shows the absurdity in one screen:
-people sitting there with nothing to eat, under a green PASSED.
+    the stamp  <- metrics/table.py::_status  (the same file adk eval imports)
 """
 import asyncio
 import json
