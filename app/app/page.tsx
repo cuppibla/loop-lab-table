@@ -21,6 +21,12 @@ export default function Page() {
   const [awaiting, setAwaiting] = useState<string | null>(null);
   const [mode, setMode] = useState<"replay" | "live" | "yours">("yours");
   const [liveUrl, setLiveUrl] = useState("http://127.0.0.1:8323");
+  /* Single-port mode (Cloud Shell Web Preview): when the felt is SERVED BY
+     the bus itself, the bus is simply our own origin. Next-dev on :3260
+     keeps the classic two-port default. */
+  useEffect(() => {
+    if (window.location.port !== "3260") setLiveUrl(window.location.origin);
+  }, []);
   const [view, setView] = useState<"show" | "console">("show");
   /* which level's step this table is showing. Advanced by the student's own
      runs, never by watching. `?act=N` overrides it (recording / demo mode). */

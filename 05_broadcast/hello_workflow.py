@@ -20,7 +20,9 @@ sys.path.insert(0, _HERE)
 from dotenv import load_dotenv
 
 load_dotenv(os.path.join(_HERE, "..", ".env"))
-os.environ.pop("GOOGLE_GENAI_USE_VERTEXAI", None)
+if os.environ.get("GOOGLE_API_KEY"):
+    # an AI Studio key wins locally; without one, Vertex mode is respected
+    os.environ.pop("GOOGLE_GENAI_USE_VERTEXAI", None)
 
 from google.adk import Agent, Event, Workflow  # noqa: E402
 from google.adk.events import RequestInput  # noqa: E402

@@ -73,7 +73,8 @@ Turn each failure note into a concrete rule. Keep the JSON output-format section
 async def run(emit, wait_for):
     from dotenv import load_dotenv
     load_dotenv(os.path.join(_HERE, "..", ".env"))
-    os.environ.pop("GOOGLE_GENAI_USE_VERTEXAI", None)
+    if os.environ.get("GOOGLE_API_KEY"):
+        os.environ.pop("GOOGLE_GENAI_USE_VERTEXAI", None)  # key wins; else Vertex
     from google.adk import Agent, Event, Workflow
     from google.adk.runners import InMemoryRunner
     from google.genai import types as gt

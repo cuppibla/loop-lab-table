@@ -21,7 +21,9 @@ if key != raw:
           "Clean it up in .env too.")
 
 os.environ["GOOGLE_API_KEY"] = key
-os.environ.pop("GOOGLE_GENAI_USE_VERTEXAI", None)  # AI Studio, not Vertex
+if os.environ.get("GOOGLE_API_KEY"):
+    # an AI Studio key wins locally; without one, Vertex mode is respected
+    os.environ.pop("GOOGLE_GENAI_USE_VERTEXAI", None)
 
 import logging
 logging.getLogger("google_genai.models").setLevel(logging.ERROR)

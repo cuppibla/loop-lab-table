@@ -22,7 +22,12 @@ import os
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import StreamingResponse
+from fastapi.responses import FileResponse, JSONResponse, StreamingResponse
+from fastapi.staticfiles import StaticFiles
+
+_HERE = os.path.dirname(os.path.abspath(__file__))
+_FELT_OUT = os.path.join(_HERE, "..", "app", "out")          # `npm run build` output
+_RUN_FILE = os.path.join(_HERE, "..", "app", "public", "run", "latest.json")
 
 app = FastAPI()
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
@@ -54,10 +59,16 @@ async def wait_for(action_type: str) -> dict:
 
 @app.get("/")
 async def index():
-    # People WILL open this address in a browser — leave a signpost, not a 404.
+    # Single-port mode: if the felt app has been built (`cd app && npm run
+    # build`), this server IS the page — Cloud Shell Web Preview needs only
+    # this one port. Without a build, leave a signpost instead of a 404.
+    felt = os.path.join(_FELT_OUT, "index.html")
+    if os.path.exists(felt):
+        return FileResponse(felt, media_type="text/html")
     return {
         "this": "the Table for N event bus — an API, not a page",
         "open_instead": "http://localhost:3260 — the app; press Enter in its URL box to connect it here",
+        "build_the_single_port_page": "cd app && npm install && npm run build — then reload this address",
         "doors": {
             "GET /events": "SSE: full history, then live",
             "POST /run": "start one episode",
@@ -65,6 +76,15 @@ async def index():
             "GET /log": "the whole log as JSON",
         },
     }
+
+
+@app.get("/run/latest.json")
+async def latest_run():
+    """The your-run file is written at runtime, after any static build."""
+    if os.path.exists(_RUN_FILE):
+        return FileResponse(_RUN_FILE, media_type="application/json",
+                            headers={"Cache-Control": "no-store"})
+    return JSONResponse({"detail": "no run yet"}, status_code=404)
 
 
 @app.get("/events")
@@ -119,3 +139,7 @@ async def run():
 @app.get("/log")
 async def log():
     return {"events": LOG, "running": RUNNING}
+
+
+if os.path.isdir(_FELT_OUT):
+    app.mount("/", StaticFiles(directory=_FELT_OUT, html=True), name="felt")

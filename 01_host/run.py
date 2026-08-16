@@ -3,7 +3,9 @@ import asyncio, sys, os
 sys.path.insert(0, os.path.dirname(__file__))
 from dotenv import load_dotenv
 load_dotenv(os.path.join(os.path.dirname(__file__), "..", ".env"))
-os.environ.pop("GOOGLE_GENAI_USE_VERTEXAI", None)
+if os.environ.get("GOOGLE_API_KEY"):
+    # an AI Studio key wins locally; without one, Vertex mode is respected
+    os.environ.pop("GOOGLE_GENAI_USE_VERTEXAI", None)
 from google.adk.runners import Runner
 from google.adk.sessions import InMemorySessionService
 from google.genai import types

@@ -10,3 +10,4 @@ node_modules/
 app/public/run/latest.json
 02_judge/*.txt
 *_run.txt
+app/out/

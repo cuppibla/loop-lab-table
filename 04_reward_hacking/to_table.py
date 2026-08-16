@@ -19,7 +19,9 @@ from dotenv import load_dotenv
 _LEVEL = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, _LEVEL)
 load_dotenv(os.path.join(_LEVEL, "..", ".env"))
-os.environ.pop("GOOGLE_GENAI_USE_VERTEXAI", None)
+if os.environ.get("GOOGLE_API_KEY"):
+    # an AI Studio key wins locally; without one, Vertex mode is respected
+    os.environ.pop("GOOGLE_GENAI_USE_VERTEXAI", None)
 
 from google.adk.runners import Runner  # noqa: E402
 from google.adk.sessions import InMemorySessionService  # noqa: E402
@@ -41,26 +43,36 @@ def write(events):
 
 
 def _confirm(stamp, n):
-    """The table on :3260 must be THIS repo's app — say so plainly when it isn't."""
+    """Find the table that will actually play this run, and say so plainly."""
     import urllib.error
     import urllib.request
-    try:
-        with urllib.request.urlopen(
-                f"http://localhost:3260/run/latest.json?t={int(stamp)}", timeout=2) as r:
-            served = json.load(r).get("stamp")
-    except urllib.error.HTTPError:
-        served = None          # an app answered, but it has no such file
-    except Exception:
-        print("\n⚠️  Wrote your run, but nothing is answering on http://localhost:3260.")
-        print("   Start the app from THIS repo:   cd app && npm install && npm run dev")
-        print("   then open http://localhost:3260 — your run plays on load.")
-        return
-    if served == stamp:
-        print(f"\n📺 on the table → http://localhost:3260   ({n} events)")
+    ports = [3260, 8323]                      # next dev · the bus (single-port)
+    if os.environ.get("TABLE_APP_PORT"):
+        ports.insert(0, int(os.environ["TABLE_APP_PORT"]))
+    answered = []
+    for port in ports:
+        try:
+            with urllib.request.urlopen(
+                    f"http://localhost:{port}/run/latest.json?t={int(stamp)}",
+                    timeout=2) as r:
+                if json.load(r).get("stamp") == stamp:
+                    print(f"\n📺 on the table → http://localhost:{port}   ({n} events)")
+                    return
+                answered.append(port)
+        except urllib.error.HTTPError:
+            answered.append(port)             # an app, but a different copy / no file
+        except Exception:
+            pass                              # nothing on this port
+    if answered:
+        print(f"\n⚠️  An app answered on port {answered[0]} but it is serving a DIFFERENT")
+        print("   copy of this repo — your runs will never appear there. Stop it, then")
+        print("   from THIS repo:  cd app && npm run dev  (or serve the bus with the")
+        print("   felt built: cd app && npm run build, then run the broadcast server).")
     else:
-        print("\n⚠️  The app on http://localhost:3260 is serving a DIFFERENT copy of this")
-        print("   repo, so your runs will never appear on it. Stop that server, then")
-        print("   from THIS repo:   cd app && npm run dev   — and rerun this script.")
+        print("\n⚠️  Wrote your run, but no app is answering (tried "
+              + ", ".join(str(p) for p in ports) + ").")
+        print("   Start one from THIS repo:  cd app && npm install && npm run dev")
+        print("   then open http://localhost:3260 — your run plays on load.")
 
 
 def parse(text):
