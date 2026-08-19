@@ -93,8 +93,10 @@ async def main(party):
     out = ""
     async for ev in runner.run_async(user_id="you", session_id="s1",
             new_message=types.Content(role="user", parts=[types.Part(text=world.brief(party))])):
-        if ev.is_final_response():
+        if ev.is_final_response() and ev.content and ev.content.parts:
             out = ev.content.parts[0].text
+    if not out:
+        sys.exit("\n✗ No answer from the model.\n  If you saw 429 RESOURCE_EXHAUSTED above, the region is out of shared\n  quota. Set GOOGLE_CLOUD_LOCATION=global in ~/loop-lab-table/.env and\n  re-run. Nothing in your code is broken.")
     print(out)
 
     rid, when, why = parse(out)
