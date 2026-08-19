@@ -79,10 +79,15 @@ Levels 02 and 05 ship with holes on purpose (`# ── YOUR FIX ──`,
 `# ── YOUR EMIT #n ──`); `solutions/` and `prebaked/` sit next to them when you
 want the answer or want to skip an expensive run.
 
-## The app
+## The app (optional — not part of the lab)
 
 `app/` is a Next.js stage that renders the loop — seats fold as the judge walks
 the table, the diff card shows the rewrite, the switch flips the judge live.
+
+The lab itself no longer uses it: every level reports its result in the
+terminal, and `setup.sh` does not build the stage. It is kept here because it
+still works standalone, and it is a nice way to *watch* the loop rather than
+read it.
 
 ```bash
 cd app && npm install && npm run dev     # http://localhost:3260
