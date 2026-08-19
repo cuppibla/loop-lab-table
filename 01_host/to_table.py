@@ -1,12 +1,11 @@
-"""Put YOUR run on the table.  Usage: python to_table.py [p1]
+"""Run YOUR agent on one party and print what it booked.  Usage: python to_table.py [p1]
 
 Runs the agent in host/agent.py against a real party brief — one real model
-call — and writes what happened to the app as an event file. The table at
-http://localhost:3260 picks it up within a second or two.
+call.
 
-Level 01 emits exactly two things: the party, and the agent's pick. No seats
-light up, no score appears, because nothing in this system can judge yet.
-That empty verdict IS level 01.
+Level 01 prints exactly two things: the party, and the agent's pick. No score
+appears, because nothing in this system can judge yet. That empty verdict IS
+level 01.
 """
 import asyncio
 import json
@@ -31,48 +30,12 @@ from google.genai import types  # noqa: E402
 import world  # noqa: E402
 from host import root_agent  # noqa: E402
 
-OUT = os.path.join(_LEVEL, "..", "app", "public", "run", "latest.json")
 
 
 def write(events):
-    os.makedirs(os.path.dirname(OUT), exist_ok=True)
-    stamp = time.time()
-    with open(OUT, "w") as f:
-        json.dump({"stamp": stamp, "events": events}, f, indent=1)
-    _confirm(stamp, len(events))
+    """No-op: the felt table UI was removed. Results print to stdout."""
+    return
 
-
-def _confirm(stamp, n):
-    """Find the table that will actually play this run, and say so plainly."""
-    import urllib.error
-    import urllib.request
-    ports = [3260, 8323]                      # next dev · the bus (single-port)
-    if os.environ.get("TABLE_APP_PORT"):
-        ports.insert(0, int(os.environ["TABLE_APP_PORT"]))
-    answered = []
-    for port in ports:
-        try:
-            with urllib.request.urlopen(
-                    f"http://localhost:{port}/run/latest.json?t={int(stamp)}",
-                    timeout=2) as r:
-                if json.load(r).get("stamp") == stamp:
-                    print(f"\n📺 on the table → http://localhost:{port}   ({n} events)")
-                    return
-                answered.append(port)
-        except urllib.error.HTTPError:
-            answered.append(port)             # an app, but a different copy / no file
-        except Exception:
-            pass                              # nothing on this port
-    if answered:
-        print(f"\n⚠️  An app answered on port {answered[0]} but it is serving a DIFFERENT")
-        print("   copy of this repo — your runs will never appear there. Stop it, then")
-        print("   from THIS repo:  cd app && npm run dev  (or serve the bus with the")
-        print("   felt built: cd app && npm run build, then run the broadcast server).")
-    else:
-        print("\n⚠️  Wrote your run, but no app is answering (tried "
-              + ", ".join(str(p) for p in ports) + ").")
-        print("   Start one from THIS repo:  cd app && npm install && npm run dev")
-        print("   then open http://localhost:3260 — your run plays on load.")
 
 
 def parse(text):

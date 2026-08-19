@@ -47,14 +47,6 @@ else
   tick "auth: Vertex AI on project $PROJECT (wrote .env, no API key anywhere)"
 fi
 
-# ── 3 · prebuild the felt table (single-port mode) ────────────────────
-if command -v npm >/dev/null; then
-  ( cd app && npm install --silent && npm run build --silent )
-  tick "felt table built (app/out — the broadcast server serves it)"
-else
-  printf '  ⚠ npm not found — the felt table UI will be unavailable\n'
-fi
-
 # ── 4 · prove the model answers ───────────────────────────────────────
 python - <<'PY'
 import os
