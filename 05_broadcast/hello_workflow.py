@@ -19,7 +19,7 @@ _HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, _HERE)
 from dotenv import load_dotenv
 
-load_dotenv(os.path.join(_HERE, "..", ".env"))
+load_dotenv(os.path.join(_HERE, "..", ".env"), override=True)
 if os.environ.get("GOOGLE_API_KEY"):
     # an AI Studio key wins locally; without one, Vertex mode is respected
     os.environ.pop("GOOGLE_GENAI_USE_VERTEXAI", None)

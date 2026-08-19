@@ -18,7 +18,7 @@ from dotenv import load_dotenv
 
 _LEVEL = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, _LEVEL)
-load_dotenv(os.path.join(_LEVEL, "..", ".env"))
+load_dotenv(os.path.join(_LEVEL, "..", ".env"), override=True)
 if os.environ.get("GOOGLE_API_KEY"):
     # an AI Studio key wins locally; without one, Vertex mode is respected
     os.environ.pop("GOOGLE_GENAI_USE_VERTEXAI", None)

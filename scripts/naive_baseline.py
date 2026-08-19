@@ -17,7 +17,7 @@ sys.path.insert(0, os.path.join(ROOT, LEVEL))
 
 from dotenv import load_dotenv  # noqa: E402
 
-load_dotenv(os.path.join(ROOT, ".env"))
+load_dotenv(os.path.join(ROOT, ".env"), override=True)
 if os.environ.get("GOOGLE_API_KEY"):
     # an AI Studio key wins locally; without one, Vertex mode is respected
     os.environ.pop("GOOGLE_GENAI_USE_VERTEXAI", None)
