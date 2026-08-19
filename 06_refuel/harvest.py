@@ -17,7 +17,7 @@ import uuid
 from dotenv import load_dotenv
 from google.cloud import bigquery
 
-load_dotenv(os.path.join(os.path.dirname(os.path.abspath(__file__)), ".env"))
+load_dotenv(os.path.join(os.path.dirname(os.path.abspath(__file__)), ".env"), override=True)
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import world  # noqa: E402
 

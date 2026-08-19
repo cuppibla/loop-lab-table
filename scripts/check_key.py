@@ -8,7 +8,7 @@ import sys
 from dotenv import load_dotenv
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-load_dotenv(os.path.join(ROOT, ".env"))
+load_dotenv(os.path.join(ROOT, ".env"), override=True)
 
 raw = os.environ.get("GOOGLE_API_KEY", "")
 key = "".join(raw.split())  # strip stray whitespace/newlines from pasting

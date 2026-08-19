@@ -21,7 +21,7 @@ from vertexai import agent_engines
 
 from dotenv import load_dotenv
 
-load_dotenv(os.path.join(os.path.dirname(os.path.abspath(__file__)), ".env"))
+load_dotenv(os.path.join(os.path.dirname(os.path.abspath(__file__)), ".env"), override=True)
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import world  # noqa: E402
 

@@ -211,7 +211,7 @@ async def run_scripted(emit, wait_for):
 
 async def run_workflow(emit, wait_for):
     from dotenv import load_dotenv
-    load_dotenv(os.path.join(_BASE, "..", ".env"))
+    load_dotenv(os.path.join(_BASE, "..", ".env"), override=True)
     if os.environ.get("GOOGLE_API_KEY"):
         os.environ.pop("GOOGLE_GENAI_USE_VERTEXAI", None)  # key wins; else Vertex
     from google.adk import Agent, Event, Workflow
