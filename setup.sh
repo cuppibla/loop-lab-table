@@ -16,9 +16,11 @@ say "Table for N · setup"
 if [ ! -d .venv ]; then python3 -m venv .venv; fi
 # shellcheck disable=SC1091
 source .venv/bin/activate
+# [eval] powers levels 02-04; [gcp] pulls google-cloud-bigquery-storage, which
+# level 06's BigQueryAgentAnalyticsPlugin imports at module load.
 pip install -q --disable-pip-version-check \
-  "google-adk[eval]==2.3.0" python-dotenv pydantic nest_asyncio uvicorn
-tick "venv + google-adk[eval]==2.3.0"
+  "google-adk[eval,gcp]==2.3.0" python-dotenv pydantic nest_asyncio uvicorn
+tick "venv + google-adk[eval,gcp]==2.3.0"
 
 # ── 2 · pick the auth path ────────────────────────────────────────────
 KEY="$(grep -s '^GOOGLE_API_KEY=' .env | cut -d= -f2- || true)"
@@ -36,7 +38,11 @@ else
   {
     echo "GOOGLE_GENAI_USE_VERTEXAI=True"
     echo "GOOGLE_CLOUD_PROJECT=$PROJECT"
-    echo "GOOGLE_CLOUD_LOCATION=us-central1"
+    # global, not a region: Gemini here runs on dynamic shared quota, so one
+    # busy region can 429 through no fault of the student. global draws on
+    # capacity across regions. ADK loads .env OVER shell exports, so this
+    # file is what actually decides the endpoint.
+    echo "GOOGLE_CLOUD_LOCATION=global"
   } > .env
   tick "auth: Vertex AI on project $PROJECT (wrote .env, no API key anywhere)"
 fi

@@ -4,6 +4,6 @@ version = "0.1.0"
 description = "Table for N — eval as the gate, self-evolution as the loop, one dinner table"
 requires-python = ">=3.11"
 dependencies = [
-    "google-adk[eval]==2.3.0",
+    "google-adk[eval,gcp]==2.3.0",
     "python-dotenv>=1.0",
 ]
