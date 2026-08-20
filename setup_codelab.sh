@@ -1,9 +1,21 @@
 #!/usr/bin/env bash
-# Table for N — one-shot environment setup (safe to re-run any number of times).
+# Table for N — one-shot environment setup for the CODELAB (uv path).
+# Safe to re-run any number of times.
 #
-# Cloud Shell / Vertex path (no API key):   ./setup.sh
+# This script is the codelab's setup path and it uses uv: `uv venv` + `uv sync`
+# against pyproject.toml / uv.lock.
+#
+# setup.sh, next to this file, is the Qwiklabs path and it uses pip into a
+# python3 -m venv. Qwiklabs lab adk2004-self-evolve-agent runs ./setup.sh and
+# then `source .venv/bin/activate` + ./verify.sh, so setup.sh must not change.
+#
+# The two scripts are deliberately separate: one lab's dependency story can
+# never break the other's. Both end up with a .venv the shared ./verify.sh can
+# activate, so verify.sh stays shared and unmodified.
+#
+# Cloud Shell / Vertex path (no API key):   ./setup_codelab.sh
 # Laptop / AI Studio path:                  put GOOGLE_API_KEY in .env first,
-#                                           then ./setup.sh
+#                                           then ./setup_codelab.sh
 set -euo pipefail
 cd "$(dirname "$0")"
 
@@ -12,15 +24,19 @@ tick() { printf '  ✓ %s\n' "$1"; }
 
 say "Table for N · setup"
 
-# ── 1 · python venv + deps ────────────────────────────────────────────
-if [ ! -d .venv ]; then python3 -m venv .venv; fi
-# shellcheck disable=SC1091
-source .venv/bin/activate
+# ── 1 · python env + deps (uv owns both) ────────────────────────────────────────────
+if ! command -v uv >/dev/null 2>&1; then
+  printf '  \u2717 uv not found. Install it, then re-run ./setup_codelab.sh:\n' >&2
+  printf '      curl -LsSf https://astral.sh/uv/install.sh | sh\n' >&2
+  exit 1
+fi
+# uv is the only dependency path now: `uv venv` makes .venv, `uv sync` installs
+# exactly what uv.lock pins. Nothing is pip-installed on the side.
 # [eval] powers levels 02-04; [gcp] pulls google-cloud-bigquery-storage, which
 # level 06's BigQueryAgentAnalyticsPlugin imports at module load.
-pip install -q --disable-pip-version-check \
-  "google-adk[eval,gcp]==2.3.0" python-dotenv pydantic nest_asyncio uvicorn
-tick "venv + google-adk[eval,gcp]==2.3.0"
+uv venv
+uv sync
+tick "uv env + google-adk[eval,gcp]==2.3.0 (locked)"
 
 # ── 2 · pick the auth path ────────────────────────────────────────────
 KEY="$(grep -s '^GOOGLE_API_KEY=' .env | cut -d= -f2- || true)"
@@ -48,7 +64,7 @@ else
 fi
 
 # ── 4 · prove the model answers ───────────────────────────────────────
-python - <<'PY'
+uv run python - <<'PY'
 import os
 from dotenv import load_dotenv; load_dotenv(".env")
 if os.environ.get("GOOGLE_API_KEY"):
@@ -64,4 +80,4 @@ r = client.models.generate_content(
 print("  ✓ gemini-2.5-flash:", r.text.strip())
 PY
 
-say "Setup finished. Next:  source .venv/bin/activate  ·  ./verify.sh"
+say "Setup finished. Next:  ./verify.sh"
