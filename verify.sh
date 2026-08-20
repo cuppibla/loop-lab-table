@@ -2,18 +2,16 @@
 # Table for N — the rig check. Every tick is a real probe, not a guess.
 set -uo pipefail
 cd "$(dirname "$0")"
-# shellcheck disable=SC1091
-[ -d .venv ] && source .venv/bin/activate
 
 printf '\n\033[1mChecking the rig\033[0m\n\n'
 fail=0
 tick() { printf '  ✓ %-28s %s\n' "$1" "$2"; }
 miss() { printf '  ✗ %-28s %s\n' "$1" "$2"; fail=1; }
 
-V="$(adk --version 2>/dev/null | head -1)" \
+V="$(uv run adk --version 2>/dev/null | head -1)" \
   && tick "adk installed" "$V" || miss "adk installed" "run ./setup.sh"
 
-python - <<'PY' 2>/dev/null && tick "adk 2 workflow apis" "Workflow + RequestInput" \
+uv run python - <<'PY' 2>/dev/null && tick "adk 2 workflow apis" "Workflow + RequestInput" \
   || miss "adk 2 workflow apis" "wrong adk version — need 2.3.0"
 from google.adk import Workflow
 from google.adk.events import RequestInput
@@ -27,7 +25,7 @@ else
   miss "auth mode" "no .env — run ./setup.sh"
 fi
 
-python - <<'PY' 2>/dev/null && tick "model answers" "gemini-2.5-flash" \
+uv run python - <<'PY' 2>/dev/null && tick "model answers" "gemini-2.5-flash" \
   || miss "model answers" "auth or project problem — re-run ./setup.sh"
 import os
 from dotenv import load_dotenv; load_dotenv(".env")
@@ -41,9 +39,9 @@ client.models.generate_content(model="gemini-2.5-flash", contents="ok",
         thinking_config=gt.ThinkingConfig(thinking_budget=0)))
 PY
 
-python3 scripts/verify_world.py >/dev/null 2>&1 \
+uv run python scripts/verify_world.py >/dev/null 2>&1 \
   && tick "the world" "16 parties, every one has a perfect answer" \
-  || miss "the world" "python3 scripts/verify_world.py"
+  || miss "the world" "uv run python scripts/verify_world.py"
 
 [ -f app/public/sim/story.json ] \
   && tick "felt companion" "app/ — a standalone simulation (npm run dev)" \

@@ -6,4 +6,9 @@ requires-python = ">=3.11"
 dependencies = [
     "google-adk[eval,gcp]==2.3.0",
     "python-dotenv>=1.0",
+    # level 05's broadcast.py imports fastapi directly and is served with
+    # `uv run uvicorn broadcast:app`, so both are first-party deps here
+    # rather than things we hope google-adk keeps pulling in.
+    "fastapi>=0.115",
+    "uvicorn>=0.30",
 ]

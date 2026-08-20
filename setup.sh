@@ -12,15 +12,19 @@ tick() { printf '  ✓ %s\n' "$1"; }
 
 say "Table for N · setup"
 
-# ── 1 · python venv + deps ────────────────────────────────────────────
-if [ ! -d .venv ]; then python3 -m venv .venv; fi
-# shellcheck disable=SC1091
-source .venv/bin/activate
+# ── 1 · python env + deps (uv owns both) ────────────────────────────────────────────
+if ! command -v uv >/dev/null 2>&1; then
+  printf '  \u2717 uv not found. Install it, then re-run ./setup.sh:\n' >&2
+  printf '      curl -LsSf https://astral.sh/uv/install.sh | sh\n' >&2
+  exit 1
+fi
+# uv is the only dependency path now: `uv venv` makes .venv, `uv sync` installs
+# exactly what uv.lock pins. Nothing is pip-installed on the side.
 # [eval] powers levels 02-04; [gcp] pulls google-cloud-bigquery-storage, which
 # level 06's BigQueryAgentAnalyticsPlugin imports at module load.
-pip install -q --disable-pip-version-check \
-  "google-adk[eval,gcp]==2.3.0" python-dotenv pydantic nest_asyncio uvicorn
-tick "venv + google-adk[eval,gcp]==2.3.0"
+uv venv
+uv sync
+tick "uv env + google-adk[eval,gcp]==2.3.0 (locked)"
 
 # ── 2 · pick the auth path ────────────────────────────────────────────
 KEY="$(grep -s '^GOOGLE_API_KEY=' .env | cut -d= -f2- || true)"
@@ -48,7 +52,7 @@ else
 fi
 
 # ── 4 · prove the model answers ───────────────────────────────────────
-python - <<'PY'
+uv run python - <<'PY'
 import os
 from dotenv import load_dotenv; load_dotenv(".env")
 if os.environ.get("GOOGLE_API_KEY"):
@@ -64,4 +68,4 @@ r = client.models.generate_content(
 print("  ✓ gemini-2.5-flash:", r.text.strip())
 PY
 
-say "Setup finished. Next:  source .venv/bin/activate  ·  ./verify.sh"
+say "Setup finished. Next:  ./verify.sh"
