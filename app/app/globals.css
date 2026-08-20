@@ -264,3 +264,8 @@ body {
 .rail-lvl.on { color: var(--gold); border-color: var(--gold); }
 .rail-lvl.ran::after { content: " ●"; color: var(--good); font-size: 8px; vertical-align: middle; }
 .rail-hint { margin-left: auto; font: 10.5px var(--mono); color: var(--ink-dim); opacity: .8; }
+
+/* ── simulation mode: the app is a companion, not a client ─────────────── */
+.feedchip.sim { color: var(--gold); border-color: var(--gold); background: #d9a44114; }
+.rail-lvl em { font-style: normal; opacity: .8; margin-left: 6px }
+.rail-lvl.on em { opacity: 1 }

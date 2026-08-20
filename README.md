@@ -79,22 +79,21 @@ Levels 02 and 05 ship with holes on purpose (`# ── YOUR FIX ──`,
 `# ── YOUR EMIT #n ──`); `solutions/` and `prebaked/` sit next to them when you
 want the answer or want to skip an expensive run.
 
-## The app
+## The felt table (optional companion)
 
-`app/` is a Next.js stage that renders the loop — seats fold as the judge walks
-the table, the diff card shows the rewrite, the switch flips the judge live.
+`app/` is a standalone **simulation** of the lab's story — the six beats the
+manual walks, on one felt table: the day-one pick with nothing to judge it, the
+judge walking the table, the rewrite and the ship gate, the swapped judge, the
+loop closing, and the morning after.
 
 ```bash
 cd app && npm install && npm run dev     # http://localhost:3260
 ```
 
-It runs from a recording out of the box (no key needed). To drive it from real
-model calls, start the broadcast server next to it:
+Nothing to wire: no server, no ports, no commands. Pick a chapter, watch it
+play. Every number on screen was measured on the real lab — the 3/8 baseline,
+the 0.60 → 1.00 flywheel round, seven of eight production dinners — and the
+chip reads SIMULATION the whole time, because that is what it is.
 
-```bash
-cd 05_broadcast
-RUNNER=solutions TABLE_LIVE=1 uv run uvicorn broadcast:app --port 8323
-```
-
-Swap `RUNNER=flywheel` to watch the bounded self-evolving loop rewrite its own
-instruction, round by round.
+The lab itself is terminal-only. The app is for talks, for a second screen, and
+for seeing the shape of the thing you are building.
