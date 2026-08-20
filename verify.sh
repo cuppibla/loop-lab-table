@@ -45,9 +45,9 @@ python3 scripts/verify_world.py >/dev/null 2>&1 \
   && tick "the world" "16 parties, every one has a perfect answer" \
   || miss "the world" "python3 scripts/verify_world.py"
 
-[ -f app/out/index.html ] \
-  && tick "felt table built" "app/out — served by the broadcast server" \
-  || miss "felt table built" "cd app && npm install && npm run build"
+[ -f app/public/sim/story.json ] \
+  && tick "felt companion" "app/ — a standalone simulation (npm run dev)" \
+  || miss "felt companion" "app/public/sim/story.json is missing"
 
 printf '\n'
 if [ "$fail" -eq 0 ]; then printf 'Ready. Start with level 01.\n'; else printf 'Fix the ✗ lines above, then re-run ./verify.sh\n'; exit 1; fi
