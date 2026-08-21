@@ -12,3 +12,12 @@ dependencies = [
     "fastapi>=0.115",
     "uvicorn>=0.30",
 ]
+
+# Pin the public PyPI index explicitly. Without this, regenerating the lock on a
+# machine whose /etc/pip.conf points at an internal mirror bakes unreachable
+# URLs into uv.lock, and `uv sync` then fails everywhere else (Cloud Shell
+# included) with "Connection refused".
+[[tool.uv.index]]
+name = "pypi"
+url = "https://pypi.org/simple"
+default = true
